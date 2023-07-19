@@ -1,0 +1,148 @@
+.Commentbutton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px;
+  border: none;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+
+  // margin-bottom: 100px;
+
+  .comment-button {
+    display: inline-flex;
+    margin-top: 2.5px;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #6f6f6f;
+    border: none;
+    width: 100%;
+    background-color: white;
+    border-radius: 5px;
+    span {
+      cursor: pointer;
+      .blue {
+        color: blue;
+      }
+      .black {
+        color: black;
+      }
+    }
+    img {
+      width: 25px;
+      height: 20px;
+      margin-right: -5px;
+      cursor: pointer;
+    }
+    @media (min-width: 768px) {
+      span {
+        margin-left: 8px;
+        margin-right: -10px;
+      }
+    }
+  }
+}
+
+
+.addComment {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 10px;
+  border: none;
+  background-color: white;
+  border-radius: 5px;
+  .comment-input {
+    position: relative;
+    left: 10px;
+    height: 40px;
+    width: 500px;
+    background-color: whitesmoke;
+    padding-left: 10px;
+    border-radius: 30px;
+    border: 1px solid #737373;
+    font-family: system-ui;
+    color: #4b4b4b;
+    font-size: 16px;
+  }
+  .comment-input::placeholder {
+    font-size: 15px;
+  }
+
+  .comment-input:focus {
+    outline: 1px solid #4b4b4b;
+    color: #4b4b4b;
+  }
+  .add-comment-btn {
+    position: relative;
+    // top: 700px;
+    width: 80px;
+    height: 30px;
+    left: 20px;
+    color: white;
+    outline: none;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 25px;
+  }
+  .dark {
+    background-color: #666666;
+    color : white;
+   }
+  .blue {
+    background-color: #0a66c2;
+  }
+  .all-comments {
+    display: flex;
+    position: relative;
+    height: 60px;
+    width: 100%;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    background-color: rgb(227, 227, 227);
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 10px;
+    .name {
+      color: #212121;
+      text-decoration: none;
+      margin-left: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    .comment {
+      margin-left: 10px;
+      margin-top: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .timestamp {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 12px;
+    }
+  }
+  .hr-line {
+    margin-top: -17px;
+    hr {
+      border-top: 1px solid rgb(181, 181, 181);
+    }
+  }
+  p {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    color: rgba(58, 58, 58, 0.835);
+    font-size: 14px;
+    margin-left: 5px;
+  }
+}

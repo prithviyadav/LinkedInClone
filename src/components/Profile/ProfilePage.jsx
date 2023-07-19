@@ -3,30 +3,29 @@ import { getSingleStatus, getSingleUser } from "../../firebase";
 import Artcile  from "../Article";
 import { HiOutlinePencil } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
-// // import FileUploadModal from "../FileUploadModal";
-// // import { uploadImage as uploadImageAPI } from "../../../api/ImageUpload";
+import FileUploadModal from "../common/fileUploadModal";
+import { uploadImage as uploadImageAPI } from "../../imageUpload";
 import "./ProfilePage.scss";
 
 export default function ProfilePage({ onEdit, currentUser }) {
   let location = useLocation();
   const [allStatuses, setAllStatus] = useState([]);
   const [currentProfile, setCurrentProfile] = useState({});
-  // const getImage = (event) => {
-  //   setCurrentImage(event.target.files[0]);
-  // };
-  // console.log(currentProfile+"currentProfile");
-  // console.log(currentUser);
-  // const uploadImage = () => {
-  //   uploadImageAPI(
-  //     currentImage,
-  //     currentUser.id,
-  //     setModalOpen,
-  //     setProgress,
-  //     setCurrentImage
-  //   );
-  // };
-  // console.log(location?.state?.id + "location?.state?.id");
-  // console.log(allStatuses+"allStatuses")
+  const [currentImage, setCurrentImage] = useState({});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const getImage = (event) => {
+    setCurrentImage(event.target.files[0]);
+  };
+  const uploadImage = () => {
+    uploadImageAPI(
+      currentImage,
+      currentUser.id,
+      setModalOpen,
+      setProgress,
+      setCurrentImage,
+    );
+  };
   useMemo(() => {
     if (location?.state?.id) {
       getSingleStatus(setAllStatus, location?.state?.id);
@@ -36,19 +35,16 @@ export default function ProfilePage({ onEdit, currentUser }) {
       getSingleUser(setCurrentProfile, location?.state?.email);
     }
   }, []);
-  // console.log(currentProfile);
-  // console.log(currentUser);
-  // console.log(allStatuses);
   return (
     <>
-      {/* <FileUploadModal
+      <FileUploadModal
         getImage={getImage}
         uploadImage={uploadImage}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         currentImage={currentImage}
         progress={progress}
-      /> */}
+      />
       <div className="profile-card">
         {currentUser.userID === location?.state?.id ? (
           <div className="edit-btn">
@@ -60,16 +56,17 @@ export default function ProfilePage({ onEdit, currentUser }) {
         
         <div className="profile-info">
           <div>
-            {/* <img
+
+            <img
               className="profile-image"
               onClick={() => setModalOpen(true)}
               src={
-                Object.values(currentProfile).length === 0
-                  ? currentUser.imageLink
-                  : currentProfile?.imageLink
+                currentProfile?.imageLink ?
+                  currentProfile?.imageLink :
+                  "images/user.svg"
               }
               alt="profile-image"
-            /> */}
+            />
             <h3 className="userName">
               {Object.values(currentProfile).length === 0
                 ? currentUser.name
@@ -138,13 +135,13 @@ export default function ProfilePage({ onEdit, currentUser }) {
         ) : (
           <></>
         )}
+
       </div>
         
 
       <div className="post-status-main">
         {allStatuses?.map((posts) => {
           return (
-            // console.log(posts+"posts")
             <div className="posts-container" key={posts.id}>
               <Artcile post={posts} />
             </div>
@@ -154,21 +151,3 @@ export default function ProfilePage({ onEdit, currentUser }) {
     </>
   );
 }
-
-// import "./ProfilePage.scss";
-
-// export default function ProfilePage({ onEdit, currentUser }) {
-//   return (
-//     <>
-//       <div className="profile-card">
-//         <div className="edit-btn">
-//           <HiOutlinePencil className="edit-icon" onClick={onEdit} />
-//         </div>
-//         <div className="profile-info">
-//           <h3 className="username"> {currentUser.username}</h3>
-//           <p className="heading">{currentUser.headline}</p>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }

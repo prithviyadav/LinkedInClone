@@ -17,7 +17,8 @@ const Main = ({currentUser}) => {
       name: currentUser.name,
       userEmail: currentUser.email,
       postID: getUniqueID(),
-      userID : currentUser.userID,
+      userID: currentUser.userID,
+      imageLink: "images/user.svg"
     };
     await postStatus(obj);
     await setStatus("");
@@ -32,7 +33,7 @@ const Main = ({currentUser}) => {
     <Container>
       <ShareBox>
         <div>
-          <img src="/images/user.svg" alt="" />
+          <img src={currentUser.imageLink ? currentUser.imageLink : "images/user.svg"} alt="" />
           <button onClick={() => setModalOpen(true)}>Start a Post</button>
           <Dialog
             modalOpen={modalOpen}
@@ -113,9 +114,10 @@ const ShareBox = styled(CommonCard)`
       align-items: center;
       padding: 8px 16px 0px 16px;
       img {
-        width: 48px;
+        width: 50px;
         border-radius: 50%;
         margin-right: 8px;
+        height: 50px;
       }
       button {
         margin: 4px 0;

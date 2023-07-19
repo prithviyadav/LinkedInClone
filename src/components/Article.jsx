@@ -1,20 +1,67 @@
 import styled from "styled-components";
-import { useState, useMemo } from "react";
+import { useState, useMemo   , useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../firebase";
+import { getCurrentUser, getAllUsers  , getConnections} from "../firebase";
 import Like from "./likebutton";
+import "./styles.scss";
+import { postComment, getComments } from "../firebase";
+import { getCurrentTimeStamp } from "../helpers/useMoment";
+import "./styles.scss";
+
 const Article = ({ post, id }) => {
   const [currentUser, setCurrentUser] = useState({});
+  const [likesCount, setLikesCount] = useState(0);
+  const [allUsers, setAllUsers] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  
+  let navigate = useNavigate();
+  const getComment = (event) => {
+    setComment(event.target.value);
+  };
+
+  const addComment = () => {
+    postComment(
+      post.postID,
+      comment,
+      getCurrentTimeStamp("LLL"),
+      currentUser?.name
+    );
+    setComment("");
+  };
   useMemo(() => {
     getCurrentUser(setCurrentUser);
+    getAllUsers(setAllUsers);
   }, []);
-  getCurrentUser(setCurrentUser);
-  let navigate = useNavigate();
-  return (
+  useEffect(() => {
+    getConnections(currentUser.userID, post.userID, setIsConnected);
+  }, [currentUser.userID , post.userID]);
+  useMemo(() => {
+    getComments(post.postID, setComments);
+  }, [currentUser.userID, post.postID]);
+  
+  // if (post.userID == currentUser.userID) setIsConnected(true);
+  
+  return isConnected ? (
     <MainBox key={id}>
       <SharedActor>
         <a>
-          <img src="/images/user.svg" alt="" />
+          <img
+            src={
+              allUsers.find((user) => user.userID === post.userID)?.imageLink
+                ? allUsers.find((user) => user.userID === post.userID)
+                    ?.imageLink
+                : "/images/user.svg"
+            }
+            onClick={() =>
+              navigate("/profile", {
+                state: { id: post.userID, email: post.userEmail },
+              })
+            }
+            alt="images/user.svg"
+          />
           <div>
             <span
               onClick={() =>
@@ -23,10 +70,14 @@ const Article = ({ post, id }) => {
                 })
               }
             >
-              {post.name}
+              {allUsers.find((user) => user.userID === post.userID)?.name}
             </span>
 
-            <span>{post.userEmail}</span>
+            <span>
+              {allUsers.find((user) => user.userID === post.userID)?.headline
+                ? allUsers.find((user) => user.userID === post.userID)?.headline
+                : post.userEmail}
+            </span>
             <span>{post.time}</span>
           </div>
         </a>
@@ -44,22 +95,39 @@ const Article = ({ post, id }) => {
         <li>
           <button>
             <img src="/images/clap-icon.png" alt="" />
-            <span>105</span>
+            <span>{likesCount} user Like this Post</span>
           </button>
         </li>
         <li>
-          <a>50 Comments</a>
+          <a>{comments.length} Comments</a>
         </li>
         <li>
           <a>15 Reposts</a>
         </li>
       </SocialCounts>
       <SocialActions>
-        <Like userID={currentUser.userID} postID={post.postID}/>
-        <button>
-          <img src="/images/comment-icon.png" alt="" />
-          <span>Comments</span>
-        </button>
+        <Like
+          userID={currentUser.userID}
+          postID={post.postID}
+          setLikesCount={setLikesCount}
+        />
+        {/* <CommentButton userID={currentUser.userID} postID={post.postID} currentUser={currentUser} /> */}
+        <div className="Commentbutton">
+          <div className="comment-button">
+            <img
+              src="/images/comment-icon.png"
+              alt=""
+              onClick={() => setShowCommentBox(!showCommentBox)}
+            />
+
+            <span
+              className={showCommentBox ? "blue" : "black"}
+              onClick={() => setShowCommentBox(!showCommentBox)}
+            >
+              Comments
+            </span>
+          </div>
+        </div>
         <button>
           <img src="/images/repost-icon.png" alt="" />
           <span>Repost</span>
@@ -70,8 +138,45 @@ const Article = ({ post, id }) => {
           <span>Send</span>
         </button>
       </SocialActions>
+      <div className="addComment">
+        {showCommentBox ? (
+          <>
+            <input
+              onChange={getComment}
+              placeholder="Add a Comment..."
+              className="comment-input"
+              name="comment"
+              value={comment}
+            />
+            {comment.length > 0 ? (
+              <button className="add-comment-btn blue" onClick={addComment}>
+                Post
+              </button>
+            ) : (
+              <button className="add-comment-btn dark">Post</button>
+            )}
+
+            {comments.length > 0 ? (
+              comments.map((comment) => {
+                return (
+                  <div className="all-comments">
+                    <p className="name">{comment.name}</p>
+                    <p className="comment">{comment.comment}</p>
+
+                    <p className="timestamp">{comment.timeStamp}</p>
+                  </div>
+                );
+              })
+            ) : (
+              <></>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     </MainBox>
-  );
+  ) : (<></>);
 };
 
 const MainBox = styled.div`
@@ -103,7 +208,10 @@ const SharedActor = styled.div`
     img {
       width: 48px;
       height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
     }
+
     & > div {
       display: flex;
       flex-direction: column;
@@ -174,7 +282,7 @@ const SocialCounts = styled.ul`
   list-style: none;
   li {
     :hover {
-      cursor: pointer;
+      // cursor: pointer;
       color: rgba(0, 0, 0, 0.9);
       text-decoration: underline;
     }
@@ -191,7 +299,7 @@ const SocialCounts = styled.ul`
         width: 50px;
         height: 30px;
       }
-      cursor: pointer;
+      // cursor: pointer;
     }
     &:nth-child(2) {
       position: absolute;
@@ -204,13 +312,14 @@ const SocialCounts = styled.ul`
   }
 `;
 const SocialActions = styled.div`
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   justify-content: flex-start;
   margin: 0;
   min-height: 40px;
   padding: 4px 8px;
   button {
+    margin-top: 2.5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -220,7 +329,7 @@ const SocialActions = styled.div`
     width: 100%;
     background-color: white;
     border-radius: 5px;
-    
+
     img {
       width: 25px;
       height: 20px;

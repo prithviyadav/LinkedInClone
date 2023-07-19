@@ -14,7 +14,7 @@ import ProfileComp from "./components/ProfileComp";
 import Main from "./components/Main";
 import SignInForm from "./components/sign-in-form/sign-in-form.component";
 import SignUpForm from "./components/sign-up-form/sign-up-form.component";
-
+import Network from "./components/Network";
 import { useState, useEffect, useMemo } from "react";
 import { onAuthStateChangedListener, getCurrentUser } from "./firebase";
 function App() {
@@ -26,13 +26,14 @@ function App() {
   return (
     <Routes>
       <Route exact path="/" element={<Login />}></Route>
-      <Route path="/signin" element={<SignInForm />}></Route>
+      <Route exact path="/signin" element={<SignInForm />}></Route>
       <Route path="/signup" element={<SignUpForm />}></Route>
 
-      <Route path="/home" element={<Page currentUser={currentUser} />} />
+      <Route exact path="/home" element={<Page currentUser={currentUser} />} />
         {/* <Route path="home" element={<Main />} /> */}
-        <Route path="profile" element={<ProfileComp currentUser={currentUser}/>} />
+        <Route exact path="/profile" element={<ProfileComp currentUser={currentUser}/>} />
       {/* </Route> */}
+      <Route exact path="/network" element={<Network currentUser={currentUser} />} />
     </Routes>
   );
 }

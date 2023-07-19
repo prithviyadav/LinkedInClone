@@ -36,8 +36,7 @@ function SignInForm() {
       localStorage.setItem("userEmail", res.user.email);
       toast.success("Signed In to Linkedin!");
       resetFormFields();
-      // localStorage.setItem("userEmail", res.user.email);
-      // navigate("/home");
+      navigate("/home");
     } catch (error) {
       switch (error.code) {
         case "auth/wrong-password":

@@ -1,21 +1,32 @@
 import styled from "styled-components";
-
-const Leftside = (props) => {
+import { useNavigate } from "react-router-dom";
+const Leftside = ({ currentUser }) => {
+  let navigate = useNavigate();
   return (
     <Container>
       <ArtCard>
         <UserInfo>
           <CardBackground />
           <a>
-            <Photo />
+            <Photo>
+              <img
+                src={
+                  currentUser.imageLink
+                    ? currentUser.imageLink
+                    : "/images/user.svg"
+                }
+                alt="image"
+              />
+            </Photo>
             <Link>Welcome, there!</Link>
-          </a>
-          <a>
-            <AddPhotoText>Add a photo</AddPhotoText>
+            <AddPhotoText>
+              {" "}
+              {currentUser.name ? currentUser.name : "NewComer"}
+            </AddPhotoText>
           </a>
         </UserInfo>
         <Widget>
-          <a>
+          <a onClick={()=> navigate("/network")}>
             <div>
               <span>Connections</span>
               <span>Grow your network</span>
@@ -84,19 +95,21 @@ const CardBackground = styled.div`
 `;
 
 const Photo = styled.div`
-  box-shadow: none;
-  background-image: url("/images/photo.svg");
-  width: 72px;
-  height: 72px;
-  box-sizing: border-box;
-  background-clip: content-box;
-  background-color: white;
-  background-position: center;
-  background-size: 60%;
-  background-repeat: no-repeat;
-  border: 2px solid white;
-  margin: -38px auto 12px;
-  border-radius: 50%;
+  img {
+    box-shadow: none;
+    width: 72px;
+    height: 72px;
+    box-sizing: border-box;
+    background-clip: content-box;
+    background-color: white;
+    background-position: center;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    border: 2px solid white;
+    margin: -38px auto 12px;
+    border-radius: 50%;
+    ovrflow: hidden;
+  }
 `;
 
 const Link = styled.div`
@@ -109,18 +122,21 @@ const Link = styled.div`
 const AddPhotoText = styled.div`
   color: #0a66c2;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.33;
   font-weight: 400;
+  text-decoration: underline;
 `;
 
 const Widget = styled.div`
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
   padding-top: 12px;
+  
   padding-bottom: 12px;
   & > a {
     text-decoration: none;
     display: flex;
+    cursor: pointer;
     justify-content: space-between;
     align-items: center;
     padding: 4px 12px;

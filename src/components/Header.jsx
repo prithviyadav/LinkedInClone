@@ -1,9 +1,63 @@
 import styled from "styled-components";
-import { signOutUser, onAuthStateChangedListener } from "../firebase";
 import { Link, Outlet } from "react-router-dom";
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 import ProfilePopup from "./ProfilePopup/index";
+import { useNavigate } from "react-router-dom";
+import { getAllUsers } from "../firebase";
+import "./indexx.scss";
 const Header = ({ currentUser }) => {
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  let navigate = useNavigate();
+
+  const openUser = (user) => {
+    {
+      if (document.location.pathname == "/profile") {
+        window.location.reload() ||
+          navigate("/profile", {
+            state: {
+              id: user?.userID,
+              email: user?.email,
+            },
+          });
+      } else {
+        navigate("/profile", {
+          state: {
+            id: user?.userID,
+            email: user?.email,
+          },
+        });
+      }
+    }
+  };
+
+  const handleSearch = () => {
+    if (searchInput !== "") {
+      let searched = users.filter((user) => {
+        return Object.values(user)
+          .join("")
+          .toLowerCase()
+          .includes(searchInput.toLowerCase());
+      });
+
+      setFilteredUsers(searched);
+    } else {
+      setFilteredUsers(users);
+    }
+  };
+
+  useEffect(() => {
+    let debounced = setTimeout(() => {
+      handleSearch();
+    }, 1000);
+
+    return () => clearTimeout(debounced);
+  }, [searchInput]);
+
+  useEffect(() => {
+    getAllUsers(setUsers);
+  }, []);
   return (
     <Fragment>
       <Container>
@@ -15,7 +69,11 @@ const Header = ({ currentUser }) => {
           </Logo>
           <Search>
             <div>
-              <input type="text" placeholder="Search" />
+              <input
+                type="text"
+                placeholder="Search"
+                onChange={(event) => setSearchInput(event.target.value)}
+              />
             </div>
             <SearchIcon>
               <img src="/images/search-icon.svg" alt="" />
@@ -60,7 +118,14 @@ const Header = ({ currentUser }) => {
 
               <User>
                 <a>
-                  <img src="/images/user.svg" alt="" />
+                  <img
+                    src={
+                      currentUser.imageLink
+                        ? currentUser.imageLink
+                        : "/images/user.svg"
+                    }
+                    alt="image"
+                  />
                   <span>
                     Me
                     <img src="/images/down-icon.svg" alt="" />
@@ -84,6 +149,24 @@ const Header = ({ currentUser }) => {
           </Nav>
         </Content>
       </Container>
+      {searchInput.length === 0 ? (
+        <></>
+      ) : (
+        <div className="search-results">
+          {filteredUsers.length === 0 ? (
+            <div className="search-inner">No Results Found..</div>
+          ) : (
+            filteredUsers.map((user) => (
+              <div className="search-inner" onClick={() => openUser(user)}>
+                <img
+                  src={user.imageLink ? user.imageLink : "images/user.svg"}
+                />
+                <p className="name">{user.name}</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
       <Outlet />
     </Fragment>
   );

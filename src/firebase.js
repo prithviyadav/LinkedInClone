@@ -27,8 +27,11 @@ import {
   deleteDoc,
   serverTimestamp
 } from "firebase/firestore";
+import {
+  getStorage
+} from "firebase/storage"
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAm-Eo0F8Y2DuHMZe4N4B7ENJvlp7BHeso",
   authDomain: "linkclone-beb02.firebaseapp.com",
   projectId: "linkclone-beb02",
@@ -53,7 +56,7 @@ export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
 export const db = getFirestore();
-
+export const storage = getStorage();
 // export const addCollectionAndDocuments = async (
 //   collectionKey,
 //   objectsToAdd
@@ -236,7 +239,7 @@ export const likePost = (userId, postId, liked) => {
   }
 };
 
-export const getLikesByUser = (userId, postId, setLiked, setLikesCount) => {
+export const getLikesByUser = (userId, postId, setLikesCount,setLiked) => {
   try {
     let likeQuery = query(likeRef, where("postId", "==", postId));
 
@@ -312,7 +315,7 @@ export const addConnection = (userId, targetId) => {
 
     setDoc(connectionToAdd, { userId, targetId });
 
-    toast.success("Connection Added!");
+    // toast.success("Connection Added!");
   } catch (err) {
     console.log(err);
   }
@@ -329,7 +332,7 @@ export const getConnections = (userId, targetId, setIsConnected) => {
       let connections = response.docs.map((doc) => doc.data());
 
       const isConnected = connections.some(
-        (connection) => connection.userId === userId
+        (connection) => connection.userId=== userId
       );
 
       setIsConnected(isConnected);
